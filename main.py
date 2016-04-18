@@ -192,19 +192,17 @@ def login(repo):
         return redirect(url_for('.get_file', repo=repo))
     if request.method == 'GET':
         return render_template('login.html')
-    else:
-        form = request.form
-        user = form.get('username')
-        pword = form.get('password')
-        if user and pword:
-            if rep.is_auth(user, pword):
-                session['repo'] = repo
-                session['username'] = user
-                return redirect(url_for('.get_file', repo=repo))
-            else:
-                flash('Invalid username or password.')
-                return redirect(url_for('.login', repo=repo))
-        abort(400)
+    form = request.form
+    user = form.get('username')
+    pword = form.get('password')
+    if user and pword:
+        if rep.is_auth(user, pword):
+            session['repo'] = repo
+            session['username'] = user
+            return redirect(url_for('.get_file', repo=repo))
+        flash('Invalid username or password.')
+        return redirect(url_for('.login', repo=repo))
+    abort(400)
 
 
 @bp.route('/logout/')
@@ -213,6 +211,11 @@ def logout():
     if session.pop('username', None):
         flash('You have been logged out.')
     return redirect(url_for('.show_all'))
+
+
+@app.errorhandler(400)
+def err_bad_request(e):
+    return render_template('error400.html'), 400
 
 
 @app.errorhandler(403)
