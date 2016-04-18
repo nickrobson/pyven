@@ -9,6 +9,9 @@ from flask import Flask, request, session, redirect, url_for, abort, \
                     flash, render_template, Blueprint, g, send_file
 
 
+ARTIFACTS_DIR = 'artifacts'
+
+
 class Repo(object):
 
     def __init__(self, data):
@@ -44,6 +47,8 @@ cfg_repos = app.config['repositories']
 repos = dict()
 for repo in cfg_repos:
     repos[repo] = Repo(cfg_repos[repo])
+    if not os.path.isdir(os.path.join(ARTIFACTS_DIR, repo)):
+        os.makedirs(os.path.join(ARTIFACTS_DIR, repo))
 
 
 @bp.route('/')
@@ -66,25 +71,27 @@ def get_file(repo, url=''):
     rep = repos[repo]
     if not rep:
         abort(404)
-    fname = os.path.join('artifacts', repo, url)
+    fname = os.path.join(ARTIFACTS_DIR, repo, url)
     if os.path.isfile(fname):
         ext = fname[fname.rfind('.')+1:]
         mime = 'text/plain'
         return send_file(fname, mime)
     elif os.path.isdir(fname):
-        if rep.browse or (session.get('repo') == repo and session.get('username')):
+        logged_in = session.get('repo') == repo and session.get('username')
+        if rep.browse or logged_in:
             ls = os.listdir(fname)
             files = []
             if not url.startswith('/'):
                 url = '/' + url
             if not url.endswith('/'):
                 url += '/'
+            furl = url[1:]
             for file in ls:
                 fn = os.path.join(fname, file)
                 info = dict()
                 stat = os.stat(fn)
                 info['name'] = file
-                info['link'] = url_for('.get_file', repo=repo, url=url[1:] + file)
+                info['link'] = url_for('.get_file', repo=repo, url=furl+file)
                 if os.path.isdir(fn):
                     info['type'] = 'directory'
                     info['name'] += '/'
@@ -151,7 +158,7 @@ def upload(repo):
         vv = valid_vid.match(vid)
         if vg and va and vv:
             p = os.path.join(*gid.split('.'))
-            path = os.path.join('artifacts', repo, p, aid, vid)
+            path = os.path.join(ARTIFACTS_DIR, repo, p, aid, vid)
             jarpath = os.path.join(path, '%s-%s.jar' % (aid, vid))
             pompath = os.path.join(path, '%s-%s.pom' % (aid, vid))
             if not os.path.exists(os.path.dirname(jarpath)):
