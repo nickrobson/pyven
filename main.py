@@ -75,6 +75,9 @@ def get_file(repo, url=''):
     if os.path.isfile(fname):
         ext = fname[fname.rfind('.')+1:]
         mime = 'text/plain'
+        if ext == 'xml':
+            mime = 'text/xml'
+        print ext, mime
         return send_file(fname, mime)
     elif os.path.isdir(fname):
         logged_in = session.get('repo') == repo and session.get('username')
@@ -161,16 +164,42 @@ def upload(repo):
             path = os.path.join(ARTIFACTS_DIR, repo, p, aid, vid)
             jarpath = os.path.join(path, '%s-%s.jar' % (aid, vid))
             pompath = os.path.join(path, '%s-%s.pom' % (aid, vid))
+            mdpath = os.path.join(path, 'maven-metadata.xml')
+            mdvpath = os.path.join(os.path.dirname(path),'maven-metadata.xml')
             if not os.path.exists(os.path.dirname(jarpath)):
                 os.makedirs(os.path.dirname(jarpath))
-            with open(jarpath, "wb+") as f:
+            with open(jarpath, 'wb+') as f:
                 jar.save(f)
-            with open(pompath, "wb+") as f:
+            with open(pompath, 'wb+') as f:
                 pom.save(f)
             make_md5(jarpath)
             make_sha1(jarpath)
             make_md5(pompath)
             make_sha1(pompath)
+            with open(mdpath, 'w+') as f:
+                f.write('<metadata>')
+                f.write('<groupId>%s</groupId>' % gid)
+                f.write('<artifactId>%s</artifactId>' % aid)
+                f.write('<version>%s</version>' % vid)
+                f.write('</metadata>')
+            make_md5(mdpath)
+            make_sha1(mdpath)
+            with open(mdvpath, 'w+') as f:
+                f.write('<metadata>')
+                f.write('<groupId>%s</groupId>' % gid)
+                f.write('<artifactId>%s</artifactId>' % aid)
+                f.write('<version>%s</version>' % vid)
+                f.write('<versioning>')
+                f.write('<versions>')
+                dirname = os.path.dirname(path)
+                for l in os.listdir(dirname):
+                    if os.path.isdir(os.path.join(dirname, l)):
+                        f.write('<version>%s</version>' % l)
+                f.write('</versions>')
+                f.write('</versioning>')
+                f.write('</metadata>')
+            make_md5(mdvpath)
+            make_sha1(mdvpath)
             return '{}'
         res = []
         if not vg:
