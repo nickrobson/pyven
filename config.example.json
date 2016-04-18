@@ -1,0 +1,7 @@
+{
+    "name": "pyven",
+    "port": 5000,
+    "secret": "super secret key",
+    "prefix": "",
+    "repositories": ["public"]
+}

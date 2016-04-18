@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}Upload | {{ config.name }}{% endblock %}
+{% block body %}
+    <h2>Welcome to {{ config.name }}!</h2>
+    <form method="POST" enctype=multipart/form-data>
+        <table>
+            <tr>
+                <td>Group ID:</td>
+                <td><input type="text" name="groupId" placeholder="Enter groupId here" /></td>
+            </tr>
+            <tr>
+                <td>Artifact ID:</td>
+                <td><input type="text" name="artifactId" placeholder="Enter artifactId here" /></td>
+            </tr>
+            <tr>
+                <td>Version:</td>
+                <td><input type="text" name="version" placeholder="Enter version here" /></td>
+            </tr>
+            <tr>
+                <td>JAR File:</td>
+                <td><input type="file" name="jar" /></td>
+            </tr>
+            <tr>
+                <td>POM File:</td>
+                <td><input type="file" name="pom" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit">Submit</button></td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

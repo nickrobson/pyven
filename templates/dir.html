@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block title %}{{ dir }} | {{ config.name }}{% endblock %}
+{% block body %}
+    <h2>Showing files in directory: {{ dir }}</h2>
+    <table class="dirlist">
+        {% for info in files %}
+            <tr class="dirlist-file">
+                <td><a href="{{ info.link }}">{{ info.name }}</a></td>
+                <td>{{ info.size }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
