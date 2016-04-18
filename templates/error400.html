@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% block title %}Bad Request | {{ config.name }}{% endblock %}
+{% block body %}
+    <h2>It looks like you made a bad request.</h2>
+    <h4 class="gray">Click <a href="{{ url_for('main.get_index') }}">here</a> to go back to the home page.</h4>
+{% endblock %}

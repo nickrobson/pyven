@@ -3,5 +3,18 @@
     "port": 5000,
     "secret": "super secret key",
     "prefix": "",
-    "repositories": ["public"]
+    "repositories": {
+        "public": {
+            "browse": true,
+            "auth": {
+                "admin": "password"
+            }
+        },
+        "hidden": {
+            "browse": false,
+            "auth": {
+                "admin": "password"
+            }
+        }
+    }
 }
