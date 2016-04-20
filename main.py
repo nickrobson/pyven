@@ -53,7 +53,7 @@ for repo in cfg_repos:
 
 @bp.route('/')
 def get_index():
-    return render_template('index.html')
+    return render_template('index.html', repos=repos)
 
 
 @bp.route('/content/')
@@ -65,7 +65,7 @@ def get_repos():
 
 @bp.route('/content/<repo>/')
 @bp.route('/content/<repo>/<path:url>')
-def get_file(repo, url=''):
+def get_file(repo, url='', repos=repos):
     if '..' in url or url.startswith('/'):
         abort(404)
     rep = repos[repo]
@@ -143,7 +143,7 @@ def make_sha1(fname):
 
 
 @bp.route('/upload/<repo>/', methods=['GET', 'POST'])
-def upload(repo):
+def upload(repo, repos=repos):
     if not repos[repo]:
         abort(404)
     if not session.get('username') or session.get('repo') != repo:
@@ -213,7 +213,7 @@ def upload(repo):
 
 
 @bp.route('/login/<repo>/', methods=['GET', 'POST'])
-def login(repo):
+def login(repo, repos=repos):
     rep = repos[repo]
     if not rep:
         abort(404)
@@ -243,17 +243,17 @@ def logout():
 
 
 @app.errorhandler(400)
-def err_bad_request(e):
+def err_bad_request(e, repos=repos):
     return render_template('error400.html'), 400
 
 
 @app.errorhandler(403)
-def err_forbidden(e):
+def err_forbidden(e, repos=repos):
     return render_template('error403.html'), 403
 
 
 @app.errorhandler(404)
-def err_page_not_found(e):
+def err_page_not_found(e, repos=repos):
     return render_template('error404.html'), 404
 
 

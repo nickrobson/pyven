@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% block title %}Repositories | {{ config.name }}{% endblock %}
 {% block body %}
-    <h2>Available repositories:</h2>
-    <table class="repolist">
-        {% for repo in repos %}
-            <tr class="repolist-repo">
-                <td><a href="{{ repo }}">{{ repo }}</a></td>
-            </tr>
-        {% endfor %}
-    </table>
+  <h2>Available repositories:</h2>
+  <table class="repolist">
+    {% for repo in repos %}
+    <tr class="repolist-repo">
+      <td><a href="{{ repo }}"><h3>{{ repo }}</h3></a></td>
+    </tr>
+    {% endfor %}
+  </table>
 {% endblock %}
