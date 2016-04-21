@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import time
 
 from flask import Flask, request, session, redirect, url_for, abort, \
                     flash, render_template, Blueprint, g, send_file
@@ -189,15 +190,14 @@ def upload(repo, repos=repos):
                 f.write('<groupId>%s</groupId>' % gid)
                 f.write('<artifactId>%s</artifactId>' % aid)
                 f.write('<version>%s</version>' % vid)
-                f.write('<versioning>')
-                f.write('<versions>')
+                f.write('<versioning><versions>')
                 dirname = os.path.dirname(path)
                 for l in os.listdir(dirname):
                     if os.path.isdir(os.path.join(dirname, l)):
                         f.write('<version>%s</version>' % l)
-                f.write('</versions>')
-                f.write('</versioning>')
-                f.write('</metadata>')
+                f.write('</versions>');
+                f.write('<lastUpdated>%s</lastUpdated>' % time.strftime('%Y%m%d%H%M%S', time.gmtime()))
+                f.write('</versioning></metadata>')
             make_md5(mdvpath)
             make_sha1(mdvpath)
             return '{}'
