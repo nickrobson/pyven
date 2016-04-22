@@ -78,7 +78,6 @@ def get_file(repo, url=''):
         mime = 'text/plain'
         if ext == 'xml':
             mime = 'text/xml'
-        print ext, mime
         return send_file(fname, mime)
     elif os.path.isdir(fname):
         logged_in = session.get('repo') == repo and session.get('username')
