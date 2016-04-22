@@ -271,4 +271,4 @@ def inject_vars():
 
 if __name__ == "__main__":
     app.register_blueprint(bp, url_prefix=prefix)
-    app.run(host='0.0.0.0', port=app.config.get('port', 5000), debug=True)
+    app.run(host='0.0.0.0', port=app.config.get('port', 5000))
