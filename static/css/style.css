@@ -1,3 +1,9 @@
+.dirlist-file td {
+	padding: 5px 10px;
+}
 .dirlist-file:nth-child(odd) {
     background-color: #eee;
+}
+.marginless {
+	margin: 0;
 }
