@@ -54,19 +54,19 @@ for repo in cfg_repos:
 
 @bp.route('/')
 def get_index():
-    return render_template('index.html', repos=repos)
+    return render_template('index.html')
 
 
 @bp.route('/content/')
 @bp.route('/upload/')
 @bp.route('/login/')
 def get_repos():
-    return render_template('repos.html', repos=repos)
+    return render_template('repos.html')
 
 
 @bp.route('/content/<repo>/')
 @bp.route('/content/<repo>/<path:url>')
-def get_file(repo, url='', repos=repos):
+def get_file(repo, url=''):
     if '..' in url or url.startswith('/'):
         abort(404)
     rep = repos[repo]
@@ -118,7 +118,7 @@ def get_file(repo, url='', repos=repos):
                 if finfo['link'] != url_for('.get_file', repo=repo, url=''):
                     finfo['link'] += '/'
                 files.insert(0, finfo)
-            return render_template('dir.html', dir=url, files=files, repos=repos)
+            return render_template('dir.html', dir=url, files=files)
         abort(403)
     abort(404)
 
@@ -144,7 +144,7 @@ def make_sha1(fname):
 
 
 @bp.route('/upload/<repo>/', methods=['GET', 'POST'])
-def upload(repo, repos=repos):
+def upload(repo):
     if not repos[repo]:
         abort(404)
     if not session.get('username') or session.get('repo') != repo:
@@ -166,7 +166,7 @@ def upload(repo, repos=repos):
             jarpath = os.path.join(path, '%s-%s.jar' % (aid, vid))
             pompath = os.path.join(path, '%s-%s.pom' % (aid, vid))
             mdpath = os.path.join(path, 'maven-metadata.xml')
-            mdvpath = os.path.join(os.path.dirname(path),'maven-metadata.xml')
+            mdvpath = os.path.join(os.path.dirname(path), 'maven-metadata.xml')
             if not os.path.exists(os.path.dirname(jarpath)):
                 os.makedirs(os.path.dirname(jarpath))
             with open(jarpath, 'wb+') as f:
@@ -195,8 +195,9 @@ def upload(repo, repos=repos):
                 for l in os.listdir(dirname):
                     if os.path.isdir(os.path.join(dirname, l)):
                         f.write('<version>%s</version>' % l)
-                f.write('</versions>');
-                f.write('<lastUpdated>%s</lastUpdated>' % time.strftime('%Y%m%d%H%M%S', time.gmtime()))
+                f.write('</versions>')
+                ts = time.strftime('%Y%m%d%H%M%S', time.gmtime())
+                f.write('<lastUpdated>%s</lastUpdated>' % ts)
                 f.write('</versioning></metadata>')
             make_md5(mdvpath)
             make_sha1(mdvpath)
@@ -213,7 +214,7 @@ def upload(repo, repos=repos):
 
 
 @bp.route('/login/<repo>/', methods=['GET', 'POST'])
-def login(repo, repos=repos):
+def login(repo):
     rep = repos[repo]
     if not rep:
         abort(404)
@@ -243,19 +244,25 @@ def logout():
 
 
 @app.errorhandler(400)
-def err_bad_request(e, repos=repos):
+def err_bad_request(e):
     return render_template('error400.html'), 400
 
 
 @app.errorhandler(403)
-def err_forbidden(e, repos=repos):
+def err_forbidden(e):
     return render_template('error403.html'), 403
 
 
 @app.errorhandler(404)
-def err_page_not_found(e, repos=repos):
+def err_page_not_found(e):
     return render_template('error404.html'), 404
 
+
+@app.context_processor
+def inject_vars():
+    return {
+        'repos': repos
+    }
 
 if __name__ == "__main__":
     app.register_blueprint(bp, url_prefix=prefix)
