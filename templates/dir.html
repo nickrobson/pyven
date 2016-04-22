@@ -3,10 +3,16 @@
 {% block body %}
     <h2>Showing files in directory: {{ dir }}</h2>
     <table class="dirlist">
+        <thead>
+            <td>File</td>
+            <td>Size</td>
+            <td>Date</td>
+        </thead>
         {% for info in files %}
             <tr class="dirlist-file">
                 <td><a href="{{ info.link }}">{{ info.name }}</a></td>
                 <td>{{ info.size }}</td>
+                <td>{{ info.date }}</td>
             </tr>
         {% endfor %}
     </table>

@@ -69,7 +69,7 @@ def get_repos():
 def get_file(repo, url=''):
     if '..' in url or url.startswith('/'):
         abort(404)
-    rep = repos[repo]
+    rep = repos.get(repo)
     if not rep:
         abort(404)
     fname = os.path.join(ARTIFACTS_DIR, repo, url)
@@ -100,9 +100,12 @@ def get_file(repo, url=''):
                     info['type'] = 'directory'
                     info['name'] += '/'
                     info['link'] += '/'
+                    info['size'] = '-'
+                    info['date'] = '-'
                 elif os.path.isfile(fn):
                     info['type'] = 'file'
                     info['size'] = stat.st_size
+                    info['date'] = time.asctime(time.gmtime(stat.st_ctime))
                 files.append(info)
             files = sorted(files, key=lambda f: f['type'])
             if url != '/':
@@ -113,7 +116,9 @@ def get_file(repo, url=''):
                     parent = ''
                 finfo = {
                             'name': '../',
-                            'link': url_for('.get_file', repo=repo, url=parent)
+                            'link': url_for('.get_file', repo=repo, url=parent),
+                            'size': '-',
+                            'date': '-'
                         }
                 if finfo['link'] != url_for('.get_file', repo=repo, url=''):
                     finfo['link'] += '/'
@@ -145,7 +150,7 @@ def make_sha1(fname):
 
 @bp.route('/upload/<repo>/', methods=['GET', 'POST'])
 def upload(repo):
-    if not repos[repo]:
+    if not repos.get(repo):
         abort(404)
     if not session.get('username') or session.get('repo') != repo:
         return redirect(url_for('.login', repo=repo))
@@ -215,10 +220,10 @@ def upload(repo):
 
 @bp.route('/login/<repo>/', methods=['GET', 'POST'])
 def login(repo):
-    rep = repos[repo]
+    rep = repos.get(repo)
     if not rep:
         abort(404)
-    if session.get(repo) == repo:
+    if session.get('repo') == repo:
         return redirect(url_for('.get_file', repo=repo))
     if request.method == 'GET':
         return render_template('login.html')
