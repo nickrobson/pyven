@@ -1,33 +1,32 @@
 {% extends "layout.html" %}
 {% block title %}Upload | {{ config.name }}{% endblock %}
 {% block body %}
-    <h2>Welcome to {{ config.name }}!</h2>
+    <h2>Upload Artifact</h2>
     <form method="POST" enctype=multipart/form-data>
-        <table>
-            <tr>
-                <td>Group ID:</td>
-                <td><input type="text" name="groupId" placeholder="Enter groupId here" /></td>
-            </tr>
-            <tr>
-                <td>Artifact ID:</td>
-                <td><input type="text" name="artifactId" placeholder="Enter artifactId here" /></td>
-            </tr>
-            <tr>
-                <td>Version:</td>
-                <td><input type="text" name="version" placeholder="Enter version here" /></td>
-            </tr>
-            <tr>
-                <td>JAR File:</td>
-                <td><input type="file" name="jar" /></td>
-            </tr>
-            <tr>
-                <td>POM File:</td>
-                <td><input type="file" name="pom" /></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><button type="submit">Submit</button></td>
-            </tr>
-        </table>
+        <div class="form-group">
+            <div class="input-group input-group-lg">
+              <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-folder-open"></i></span>
+              <input type="text" class="form-control" name="groupId" placeholder="Group ID"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group input-group-lg">
+              <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-gift"></i></span>
+              <input type="text" class="form-control" name="artifactId" placeholder="Artifact ID"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group input-group-lg">
+              <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-cog"></i></span>
+              <input type="text" class="form-control" name="version" placeholder="Version"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-group">
+               <label for="pom">POM File</label>
+               <input type="file" id="pom" name="pom">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 {% endblock %}

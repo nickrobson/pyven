@@ -117,7 +117,7 @@ def get_file(repo, url='', repos=repos):
                 if finfo['link'] != url_for('.get_file', repo=repo, url=''):
                     finfo['link'] += '/'
                 files.insert(0, finfo)
-            return render_template('dir.html', dir=url, files=files)
+            return render_template('dir.html', dir=url, files=files, repos=repos)
         abort(403)
     abort(404)
 
