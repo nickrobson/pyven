@@ -37,7 +37,7 @@ app = Flask('pyven')
 with open('config.json', 'r') as f:
     app.config.update(json.loads(f.read()))
 
-bp = Blueprint('main', __name__)
+bp = Blueprint('main', __name__, static_folder='static')
 app.secret_key = app.config['secret']
 prefix = app.config.get('prefix', '')
 valid_gid = re.compile(r'[a-zA-Z0-9.]+')
