@@ -27,9 +27,9 @@
               <div class="panel-body">
                 <tr class="repolist-repo">
                   {% if not session.username %}
-                    <td><a href="/login"><h3 class="marginless">Log in</h3></a></td>
+                  <td><a href="{{ url_for('.get_index') }}login/"><h3 class="marginless">Log in</h3></a></td>
                   {% else %}
-                    <td><a href="/upload"><h3 class="marginless">Upload Artifact</h3></a></td>
+                  <td><a href="{{ url_for('.get_index') }}upload/"><h3 class="marginless">Upload Artifact</h3></a></td>
                   {% endif %}
                 </tr>
               </div>
