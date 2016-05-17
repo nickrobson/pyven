@@ -37,7 +37,7 @@ app = Flask('pyven')
 with open('config.json', 'r') as f:
     app.config.update(json.loads(f.read()))
 
-bp = Blueprint('main', __name__)
+bp = Blueprint('main', __name__, static_folder='static')
 app.secret_key = app.config['secret']
 prefix = app.config.get('prefix', '')
 valid_gid = re.compile(r'[a-zA-Z0-9.]+')
@@ -107,6 +107,8 @@ def get_file(repo, url=''):
                     info['date'] = time.asctime(time.gmtime(stat.st_ctime))
                 files.append(info)
             files = sorted(files, key=lambda f: f['type'])
+            if repo == '/':
+                repo = ''
             if url != '/':
                 parent = url[1:-1]
                 if '/' in parent:
@@ -241,10 +243,12 @@ def login(repo):
 
 @bp.route('/logout/')
 def logout():
-    session.pop('repo', None)
+    repo = session.pop('repo', None)
     if session.pop('username', None):
         flash('You have been logged out.')
-    return redirect(url_for('.show_all'))
+    if repo:
+        return redirect(url_for('.get_file', repo=repo))
+    return redirect(url_for('.get_index'))
 
 
 @app.errorhandler(400)
