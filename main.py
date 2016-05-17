@@ -82,7 +82,7 @@ def get_file(repo, url=''):
     elif os.path.isdir(fname):
         logged_in = session.get('repo') == repo and session.get('username')
         if rep.browse or logged_in:
-            ls = os.listdir(fname)
+            ls = sorted(os.listdir(fname))
             files = []
             if not url.startswith('/'):
                 url = '/' + url
