@@ -6,6 +6,7 @@ import os
 import re
 import time
 
+from werkzeug.utils import secure_filename
 from flask import Flask, request, session, redirect, url_for, abort, \
                     flash, render_template, Blueprint, g, send_file
 
@@ -82,7 +83,7 @@ def get_file(repo, url=''):
     elif os.path.isdir(fname):
         logged_in = session.get('repo') == repo and session.get('username')
         if rep.browse or logged_in:
-            ls = sorted(os.listdir(fname))
+            ls = sorted(os.listdir(fname), key=lambda s: s.lower())
             files = []
             if not url.startswith('/'):
                 url = '/' + url
@@ -149,6 +150,11 @@ def make_sha1(fname):
         f.write(hash_sha1)
 
 
+def make_hashes(fname):
+    make_md5(fname)
+    make_sha1(fname)
+
+
 @bp.route('/upload/<repo>/', methods=['GET', 'POST'])
 def upload(repo):
     if not repos.get(repo):
@@ -157,11 +163,20 @@ def upload(repo):
         return redirect(url_for('.login', repo=repo))
     if request.method == 'GET':
         return render_template('upload.html')
-    jar = request.files.get('jar')
-    pom = request.files.get('pom')
     gid = request.form.get('groupId')
     aid = request.form.get('artifactId')
     vid = request.form.get('version')
+    files = {}
+    filen = 0
+    jar = request.files.get('jar')
+    pom = request.files.get('pom')
+    while filen == len(files) and filen < 10:
+        f = request.files.get('file%dfile' % filen)
+        fn = request.form.get('file%dname' % filen)
+        ha = request.form.get('file%dhash' % filen)
+        if f and fn and len(fn):
+            files[fn] = (f, ha)
+        filen += 1
     if jar and pom and gid and aid and vid:
         vg = valid_gid.match(gid)
         va = valid_aid.match(aid)
@@ -169,28 +184,27 @@ def upload(repo):
         if vg and va and vv:
             p = os.path.join(*gid.split('.'))
             path = os.path.join(ARTIFACTS_DIR, repo, p, aid, vid)
-            jarpath = os.path.join(path, '%s-%s.jar' % (aid, vid))
-            pompath = os.path.join(path, '%s-%s.pom' % (aid, vid))
+            if not os.path.exists(path):
+                os.makedirs(path)
+            for f in (jar, pom):
+                fn = '%s-%s.%s' % (aid, vid, 'jar' if f == jar else 'pom')
+                fn = os.path.join(path, fn)
+                f.save(fn)
+                make_hashes(fn)
+            for f in files.items():
+                fpath = os.path.join(path, secure_filename(f[0]))
+                f[1][0].save(fpath)
+                if f[1][1]:
+                    make_hashes(fpath)
             mdpath = os.path.join(path, 'maven-metadata.xml')
             mdvpath = os.path.join(os.path.dirname(path), 'maven-metadata.xml')
-            if not os.path.exists(os.path.dirname(jarpath)):
-                os.makedirs(os.path.dirname(jarpath))
-            with open(jarpath, 'wb+') as f:
-                jar.save(f)
-            with open(pompath, 'wb+') as f:
-                pom.save(f)
-            make_md5(jarpath)
-            make_sha1(jarpath)
-            make_md5(pompath)
-            make_sha1(pompath)
             with open(mdpath, 'w+') as f:
                 f.write('<metadata>')
                 f.write('<groupId>%s</groupId>' % gid)
                 f.write('<artifactId>%s</artifactId>' % aid)
                 f.write('<version>%s</version>' % vid)
                 f.write('</metadata>')
-            make_md5(mdpath)
-            make_sha1(mdpath)
+            make_hashes(mdpath)
             with open(mdvpath, 'w+') as f:
                 f.write('<metadata>')
                 f.write('<groupId>%s</groupId>' % gid)
@@ -205,8 +219,7 @@ def upload(repo):
                 ts = time.strftime('%Y%m%d%H%M%S', time.gmtime())
                 f.write('<lastUpdated>%s</lastUpdated>' % ts)
                 f.write('</versioning></metadata>')
-            make_md5(mdvpath)
-            make_sha1(mdvpath)
+            make_hashes(mdvpath)
             return '{}'
         res = []
         if not vg:
