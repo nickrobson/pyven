@@ -20,3 +20,12 @@
 .marginless {
     margin: 0;
 }
+
+.flash {
+    padding: 0px 15px 15px 15px;
+    width: 100%;
+}
+
+.flash:nth-child(1) {
+    padding-top: 15px;
+}

@@ -9,12 +9,14 @@
     </head>
     <body>
         {% include "nav.html" %}
-        {% for flash in get_flashed_messages() %}
-            <div class="flash">
-                {{ flash }}
-            </div>
-        {% endfor %}
         <div class="container">
+            <div class="flashes">
+                {% for flash in get_flashed_messages() %}
+                    <div class="bg-warning flash">
+                        {{ flash }}
+                    </div>
+                {% endfor %}
+            </div>
             {% block body %}{% endblock %}
         </div>
         <script type="text/javascript" src="{{ url_for('.static', filename='js/jquery.min.js') }}"></script>
