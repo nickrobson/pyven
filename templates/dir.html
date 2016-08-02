@@ -14,6 +14,12 @@
                 <td>{{ info.size }}</td>
                 <td>{{ info.date }}</td>
             </tr>
+        {% else %}
+            <tr class="dirlist-file">
+                <td>(none)</td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
         {% endfor %}
     </table>
 {% endblock %}
