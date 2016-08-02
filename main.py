@@ -220,7 +220,7 @@ def upload(repo):
                 f.write('<lastUpdated>%s</lastUpdated>' % ts)
                 f.write('</versioning></metadata>')
             make_hashes(mdvpath)
-            return '{}'
+            return redirect(url_for('.get_file', repo=repo, url='/'.join([p, aid, vid])))
         res = []
         if not vg:
             res.append('groupId')

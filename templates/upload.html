@@ -5,20 +5,20 @@
     <form method="POST" enctype=multipart/form-data>
         <div class="form-group">
             <div class="input-group input-group-lg">
-              <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-folder-open"></i></span>
-              <input type="text" class="form-control" name="groupId" placeholder="Group ID"/>
+                <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-folder-open"></i></span>
+                <input type="text" class="form-control" name="groupId" placeholder="Group ID"/>
             </div>
         </div>
         <div class="form-group">
             <div class="input-group input-group-lg">
-              <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-gift"></i></span>
-              <input type="text" class="form-control" name="artifactId" placeholder="Artifact ID"/>
+                <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-gift"></i></span>
+                <input type="text" class="form-control" name="artifactId" placeholder="Artifact ID"/>
             </div>
         </div>
         <div class="form-group">
             <div class="input-group input-group-lg">
-              <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-cog"></i></span>
-              <input type="text" class="form-control" name="version" placeholder="Version"/>
+                <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-cog"></i></span>
+                <input type="text" class="form-control" name="version" placeholder="Version"/>
             </div>
         </div>
         <div class="form-group">
@@ -26,9 +26,34 @@
            <input type="file" id="jar" name="jar">
         </div>
         <div class="form-group">
-           <label for="pom">POM File</label>
+            <label for="pom">POM File</label>
            <input type="file" id="pom" name="pom">
         </div>
+        <div id="extra-files"></div>
+        
+        <button id="addfile" class="btn btn-secondary">Add File</button>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+{% endblock %}
+{% block scripts %}
+    <script type="application/javascript">
+        var count = 0;
+        $('#addfile').click(function(e) {
+            e.preventDefault();
+            if (count < 0 || count > 9) {
+                $(this).hide();
+                return;
+            }
+            var $div = $('<div>').addClass('form-group');
+            var $id = 'file' + count;
+            var $label = $('<label>').prop('for', $id).text('File ' + (count + 1));
+            var $input = $('<input>').prop('id', $id).prop('name', $id).prop('type', 'file');
+            $div.append($label, $input);
+            $div.appendTo($('#extra-files'));
+            count++;
+            if (count == 10) {
+                $(this).hide();
+            }
+        });
+    </script>
 {% endblock %}

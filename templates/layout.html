@@ -15,9 +15,10 @@
             </div>
         {% endfor %}
         <div class="container">
-          {% block body %}{% endblock %}
+            {% block body %}{% endblock %}
         </div>
         <script type="text/javascript" src="{{ url_for('.static', filename='js/jquery.min.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('.static', filename='js/bootstrap.min.js') }}"></script>
+        {% block scripts %}{% endblock %}
     </body>
 </html>
