@@ -11,8 +11,17 @@ from flask import Flask, request, session, redirect, url_for, abort, \
                     flash, render_template, Blueprint, g, send_file
 
 
-ARTIFACTS_DIR = 'artifacts'
 
+class NoBrowse(Exception):
+
+    def __init__(self, repo):
+        Exception.__init__(self)
+        self.repo = repo
+
+    def to_dict(self):
+        rv = dict()
+        rv['repo'] = repo
+        return rv
 
 class Repo(object):
 
@@ -32,7 +41,7 @@ class Repo(object):
             return False
         return self.auth.get(username) == password
 
-
+ARTIFACTS_DIR = 'artifacts'
 app = Flask('pyven')
 
 with open('config.json', 'r') as f:
@@ -126,7 +135,7 @@ def get_file(repo, url=''):
                     finfo['link'] += '/'
                 files.insert(0, finfo)
             return render_template('dir.html', dir=url, files=files)
-        abort(403)
+        raise NoBrowse(repo)
     abort(404)
 
 
@@ -277,6 +286,11 @@ def err_forbidden(e):
 @app.errorhandler(404)
 def err_page_not_found(e):
     return render_template('error404.html'), 404
+
+
+@app.errorhandler(NoBrowse)
+def err_no_browse(error):
+    return render_template('error403.html', nobrowse=error.repo), 403
 
 
 @app.context_processor

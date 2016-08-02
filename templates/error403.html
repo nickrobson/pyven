@@ -2,6 +2,9 @@
 {% block title %}Forbidden | {{ config.name }}{% endblock %}
 {% block body %}
     <h2>It looks like you're not allowed to see this page.</h2>
+    {% if nobrowse %}
+        <h4 class="gray">Click <a href="{{ url_for('main.login', repo=nobrowse) }}">here</a> if you think you need to log in.</h4>
+    {% endif %}
     <h4 class="gray">Click <a href="javascript:window.history.back()">here</a> to go back.</h4>
     <h4 class="gray">Click <a href="{{ url_for('main.get_index') }}">here</a> to go back to the home page.</h4>
 {% endblock %}
