@@ -1,5 +1,6 @@
 .dirlist tr {
     border: 2px solid #eee;
+    width: 100%;
 }
 
 .dirlist thead td {
@@ -8,10 +9,14 @@
 
 .dirlist-file td {
     padding: 5px 10px;
+    width: 100%;
+    white-space: nowrap;
 }
+
 .dirlist-file:nth-child(odd) {
     background-color: #eee;
 }
+
 .marginless {
     margin: 0;
 }
