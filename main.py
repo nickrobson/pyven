@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import ssl
 import time
 
 from werkzeug.utils import secure_filename
@@ -300,5 +301,10 @@ def inject_vars():
     }
 
 if __name__ == "__main__":
+    sslctx = None
+    if 'ssl' in app.config:
+        sslconfig = app.config['ssl']
+        sslctx = ssl.SSLContext(protocol = ssl.PROTOCOL_SSLv23)
+        sslctx.load_cert_chain(sslconfig['certfile'], sslconfig.get('keyfile'), sslconfig.get('password'))
     app.register_blueprint(bp, url_prefix=prefix)
-    app.run(host='0.0.0.0', port=app.config.get('port', 5000))
+    app.run(host='0.0.0.0', port=app.config.get('port', 5000), ssl_context=sslctx)
